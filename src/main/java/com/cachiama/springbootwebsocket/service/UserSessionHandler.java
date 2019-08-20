@@ -5,9 +5,9 @@ import com.cachiama.springbootwebsocket.session.PrincipalNamePair;
 import java.util.stream.Stream;
 
 public interface UserSessionHandler {
-    void registerSessionSubscription(String sessionId, String principal, String subscription);
+    void registerSessionSubscription(String sessionId, String principal, String subscription, String subscriptionId);
 
-    void deregisterSessionSubscription(String sessionId, String subscription);
+    void deregisterSessionSubscription(String sessionId, String subscriptionId);
 
     void deregisterAllSessionSubscriptions(String sessionId);
 

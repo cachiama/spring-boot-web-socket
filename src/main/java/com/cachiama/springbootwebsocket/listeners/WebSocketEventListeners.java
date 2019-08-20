@@ -22,13 +22,13 @@ public class WebSocketEventListeners {
     @EventListener
     public void handleSubscribe(final SessionSubscribeEvent event) {
         final SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-        userSessionHandler.registerSessionSubscription(headers.getSessionId(), headers.getUser().getName(), headers.getDestination());
+        userSessionHandler.registerSessionSubscription(headers.getSessionId(), headers.getUser().getName(), headers.getDestination(), headers.getSubscriptionId());
     }
 
     @EventListener
     public void handleUnsubscribe(final SessionUnsubscribeEvent event) {
         final SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-        userSessionHandler.deregisterSessionSubscription(headers.getSessionId(), headers.getDestination());
+        userSessionHandler.deregisterSessionSubscription(headers.getSessionId(), headers.getSubscriptionId());
     }
 
 

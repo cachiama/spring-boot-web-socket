@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,24 +23,24 @@ public class UserSessionHandlerImpl implements UserSessionHandler {
     private final Map<String, SessionDto> inMemoryStore = new ConcurrentHashMap<>();
 
     @Override
-    public synchronized void registerSessionSubscription(String sessionId, String principal, String subscription) {
+    public synchronized void registerSessionSubscription(String sessionId, String principal, String subscription, String subscriptionId) {
         inMemoryStore.compute(sessionId, (key, currentValue) ->
                 Optional.ofNullable(currentValue).orElseGet(() -> SessionDto.initial(principal))
                         .mapSubscriptions(currentSubscriptions -> {
-                            LinkedHashSet<String> result = new LinkedHashSet<>(currentSubscriptions);
-                            result.add(subscription);
+                            Map<String, String> result = new LinkedHashMap<>(currentSubscriptions);
+                            result.put(subscriptionId, subscription);
                             LOGGER.debug(sessionId + " connected to " + subscription + ". Previous subscriptions were: " + currentSubscriptions);
                             return result;
                         }));
     }
 
     @Override
-    public synchronized void deregisterSessionSubscription(String sessionId, String subscription) {
+    public synchronized void deregisterSessionSubscription(String sessionId, String subscriptionId) {
         inMemoryStore.computeIfPresent(sessionId, (key, sessionDto) ->
                 sessionDto.mapSubscriptions(currentSubscriptions -> {
-                    LinkedHashSet<String> result = new LinkedHashSet<>(currentSubscriptions);
-                    result.remove(subscription);
-                    LOGGER.debug(sessionId + " disconnected from " + subscription + ". Remaining subscriptions: " + result);
+                    Map<String, String> result = new LinkedHashMap<>(currentSubscriptions);
+                    result.remove(subscriptionId);
+                    LOGGER.debug(sessionId + " disconnected from " + subscriptionId + ". Remaining subscriptions: " + result);
                     return result;
                 }));
     }
@@ -49,7 +49,8 @@ public class UserSessionHandlerImpl implements UserSessionHandler {
     public synchronized void deregisterAllSessionSubscriptions(String sessionId) {
         SessionDto sessionDto = inMemoryStore.remove(sessionId);
 
-        LOGGER.debug(Optional.ofNullable(sessionDto.getSubscriptions()).orElseGet(Collections::emptySet)
+        LOGGER.debug(Optional.ofNullable(sessionDto.getSubscriptionIdSubscriptionMap()).orElseGet(Collections::emptyMap)
+                .keySet()
                 .stream()
                 .collect(Collectors.joining(",", "Session " + sessionId + " disconnected from ", "")));
     }

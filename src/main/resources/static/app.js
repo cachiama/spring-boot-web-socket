@@ -19,10 +19,6 @@ const connect = () => {
     stompClient.connect({}, (frame) => {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/user', (greeting) => {
-            alert("Name set " + (JSON.parse(greeting.body).success ? "successfully" : "failed") + ".")
-            globalTimeSubscription && globalTimeSubscription.unsubscribe()
-        });
         stompClient.subscribe('/user/personalised-time', (greeting) => showGreeting("/user/personalised-time " + JSON.parse(greeting.body).message));
         globalTimeSubscription = stompClient.subscribe('/topic/time', (message) => showGreeting("/topic/time " + JSON.parse(message.body).message));
     });
@@ -36,7 +32,13 @@ const disconnect = () => {
     console.log("Disconnected");
 };
 
-const sendName = () => stompClient.send("/app/user", {}, JSON.stringify({'name': $("#name").val()}));
+const sendName = () => {
+    stompClient.subscribe('/topic/user', (greeting) => {
+        alert("Name set " + (JSON.parse(greeting.body).success ? "successfully" : "failed") + ".")
+        globalTimeSubscription && globalTimeSubscription.unsubscribe()
+    });
+    stompClient.send("/app/user", {}, JSON.stringify({'name': $("#name").val()}));
+};
 
 const showGreeting = (message) => $("#responses").append("<tr><td>" + message + "</td></tr>");
 

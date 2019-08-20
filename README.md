@@ -20,4 +20,4 @@ This sample includes:
  - Click connect to connect the web sockets
  - Note the incoming messages
  - Set the name and click `Send`
- - Note the incoming messages. Now they are personalised send exclusively to you.
+ - Note the incoming messages. Now they are personalised sent exclusively to you.
