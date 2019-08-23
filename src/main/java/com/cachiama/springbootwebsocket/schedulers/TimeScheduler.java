@@ -21,6 +21,6 @@ public class TimeScheduler {
 
     @Scheduled(fixedDelay = 1_000)
     public void broadcastToTime() {
-        template.convertAndSend(WebSocketConfig.TOPIC + "/time", new TimeResponse());
+        template.convertAndSend(WebSocketConfig.TOPIC + WebSocketConfig.TIME_TOPIC, new TimeResponse());
     }
 }

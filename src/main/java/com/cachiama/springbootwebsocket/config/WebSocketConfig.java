@@ -12,6 +12,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     public static final String TOPIC = "/topic";
     public static final String SUBSCRIBE_USER_REPLY = "/personalised-time";
+    public static final String TIME_TOPIC = "/time";
+    public static final String USER_NAME = "/username";
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
@@ -22,7 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker(TOPIC, SUBSCRIBE_USER_REPLY);
+        registry.enableSimpleBroker(TOPIC, SUBSCRIBE_USER_REPLY, USER_NAME);
         registry.setApplicationDestinationPrefixes("/app");
     }
 }
